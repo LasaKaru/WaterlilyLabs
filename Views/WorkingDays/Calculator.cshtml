@@ -1,0 +1,75 @@
+﻿@model WaterlilyLabs.Models.ViewModels.WorkingDaysRequestViewModel
+
+@{
+    ViewData["Title"] = "Working Days Calculator";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Calculator" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="form-group mb-3">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" type="date" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" type="date" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Calculate</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.CalculatedWorkingDays.HasValue)
+{
+    <div class="mt-4">
+        <h3>Result</h3>
+        <p>
+            Number of working days between <strong>@Model.StartDate.ToShortDateString()</strong>
+            and <strong>@Model.EndDate.ToShortDateString()</strong> (inclusive) is:
+            <strong>@Model.CalculatedWorkingDays</strong>
+        </p>
+        <p class="text-muted small">
+            Note: The example 01/01/2021 - 04/01/2021 = 1 day (1st holiday, 2nd/3rd weekends). <br />
+            Example: 04/01/2021 - 05/01/2021 = 2 days.
+        </p>
+    </div>
+}
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $("#EndDate").change(function () {
+                var startDate = $("#StartDate").val();
+                var endDate = $(this).val();
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+
+                }
+            });
+        });
+    </script>
+}
